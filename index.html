@@ -159,9 +159,79 @@
     footer a {
       color: var(--lime);
     }
+    .settings-anchor {
+      position: fixed;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 200;
+      text-align: right;
+    }
+    button.btn-settings {
+      margin-top: 0;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.7rem;
+      background: linear-gradient(180deg, var(--cyan), #66cccc);
+    }
+    .settings-panel {
+      margin-top: 0.4rem;
+      padding: 0.85rem 1rem;
+      background: var(--paper);
+      border: 3px solid var(--border);
+      box-shadow: 6px 6px 0 var(--orange);
+      text-align: left;
+      max-width: min(18rem, calc(100vw - 2rem));
+    }
+    .settings-panel[hidden] { display: none !important; }
+    .settings-panel p {
+      margin: 0 0 0.5rem;
+      font-size: 0.88rem;
+      color: #222;
+    }
+    .settings-panel label {
+      display: block;
+      min-width: 0;
+      font-size: 0.88rem;
+      margin-bottom: 0.35rem;
+    }
+    .settings-panel input#decPrec {
+      max-width: 5rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .settings-panel .settings-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .settings-panel .settings-actions button {
+      margin-top: 0;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.65rem;
+    }
+    .settings-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: transparent;
+    }
+    .settings-backdrop[hidden] { display: none !important; }
   </style>
 </head>
 <body>
+  <div class="settings-backdrop" id="settingsBackdrop" hidden aria-hidden="true"></div>
+  <div class="settings-anchor">
+    <button type="button" class="btn-settings" id="settingsToggle" aria-expanded="false" aria-controls="settingsPanel">⚙ Ayarlar</button>
+    <div class="settings-panel" id="settingsPanel" hidden role="dialog" aria-labelledby="settingsTitle">
+      <p id="settingsTitle"><strong>Görüntüleme</strong></p>
+      <label for="decPrec">Virgülden sonraki basamak sayısı</label>
+      <input type="number" id="decPrec" min="0" max="14" step="1" value="3" />
+      <div class="settings-actions">
+        <button type="button" id="settingsDefault">Varsayılan (3)</button>
+        <button type="button" id="settingsClose">Kapat</button>
+      </div>
+    </div>
+  </div>
   <div class="wrap">
     <h1>★ Binomial &amp; Poisson ★<br />Olasılık Hesaplayıcı</h1>
 
@@ -280,19 +350,43 @@
       for (let i = 0; i <= cap; i++) s += poissonPMF(lambda, i);
       return Math.min(1, s);
     }
-    function fmt3(p) {
+    const LS_DECIMALS = "bpProbDecimals";
+    function clampDecimals(n) {
+      const x = Math.round(Number(n));
+      if (!Number.isFinite(x)) return 3;
+      return Math.min(14, Math.max(0, x));
+    }
+    function loadProbDecimals() {
+      try {
+        return clampDecimals(localStorage.getItem(LS_DECIMALS));
+      } catch {
+        return 3;
+      }
+    }
+    let probDecimals = loadProbDecimals();
+    function saveProbDecimals() {
+      try {
+        localStorage.setItem(LS_DECIMALS, String(probDecimals));
+      } catch { /* ignore */ }
+    }
+    function fmtProb(p) {
       if (!isFinite(p)) return "—";
-      return p.toLocaleString("tr-TR", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+      const d = probDecimals;
+      return p.toLocaleString("tr-TR", { minimumFractionDigits: d, maximumFractionDigits: d });
     }
     const bState = { label: "", raw: null, complement: false };
     const pState = { label: "", raw: null, complement: false };
+    function refreshDisplayedResults() {
+      if (bState.raw !== null) renderBinomial();
+      if (pState.raw !== null) renderPoisson();
+    }
     function renderBinomial() {
       const el = document.getElementById("bout");
       const btn = document.getElementById("bcomp");
       if (bState.raw === null) return;
       const v = bState.complement ? 1 - bState.raw : bState.raw;
       const prefix = bState.complement ? "1 − " : "";
-      el.innerHTML = prefix + bState.label + " = <span class=\"val\">" + fmt3(v) + "</span>";
+      el.innerHTML = prefix + bState.label + " = <span class=\"val\">" + fmtProb(v) + "</span>";
       btn.hidden = false;
       btn.textContent = bState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
     }
@@ -302,7 +396,7 @@
       if (pState.raw === null) return;
       const v = pState.complement ? 1 - pState.raw : pState.raw;
       const prefix = pState.complement ? "1 − " : "";
-      el.innerHTML = prefix + pState.label + " = <span class=\"val\">" + fmt3(v) + "</span>";
+      el.innerHTML = prefix + pState.label + " = <span class=\"val\">" + fmtProb(v) + "</span>";
       btn.hidden = false;
       btn.textContent = pState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
     }
@@ -371,6 +465,55 @@
       pState.complement = !pState.complement;
       renderPoisson();
     });
+    (function settingsUi() {
+      const panel = document.getElementById("settingsPanel");
+      const toggle = document.getElementById("settingsToggle");
+      const backdrop = document.getElementById("settingsBackdrop");
+      const decInput = document.getElementById("decPrec");
+      const closeBtn = document.getElementById("settingsClose");
+      const defaultBtn = document.getElementById("settingsDefault");
+      decInput.value = String(probDecimals);
+      function openSettings() {
+        decInput.value = String(probDecimals);
+        panel.hidden = false;
+        backdrop.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        decInput.focus();
+      }
+      function closeSettings() {
+        panel.hidden = true;
+        backdrop.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.focus();
+      }
+      function applyFromInput() {
+        if (decInput.value === "" || decInput.value === "-") return;
+        probDecimals = clampDecimals(decInput.value);
+        decInput.value = String(probDecimals);
+        saveProbDecimals();
+        refreshDisplayedResults();
+      }
+      toggle.addEventListener("click", () => {
+        if (panel.hidden) openSettings();
+        else closeSettings();
+      });
+      backdrop.addEventListener("click", closeSettings);
+      closeBtn.addEventListener("click", closeSettings);
+      defaultBtn.addEventListener("click", () => {
+        probDecimals = 3;
+        decInput.value = "3";
+        saveProbDecimals();
+        refreshDisplayedResults();
+      });
+      decInput.addEventListener("change", applyFromInput);
+      decInput.addEventListener("input", applyFromInput);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !panel.hidden) {
+          e.preventDefault();
+          closeSettings();
+        }
+      });
+    })();
   </script>
 </body>
 </html>
