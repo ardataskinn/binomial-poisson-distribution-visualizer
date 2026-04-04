@@ -16,6 +16,7 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Binomial ve Poisson Dağılımı Hesaplama" />
   <meta name="twitter:description" content="Binomial ve Poisson olasılık hesaplayıcı — PDF ve CDF." />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
   <style>
     :root {
       --bg: #330066;
@@ -70,6 +71,25 @@
       color: #222;
     }
     .explain strong { color: #6600aa; }
+    .formulas {
+      margin: 0.75rem 0 1rem;
+      padding: 0.85rem 0.75rem;
+      background: #fff8e7;
+      border: 2px dashed #663399;
+    }
+    .formulas > p.formula-caption {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 0.88rem;
+    }
+    .formulas > p.formula-caption:first-child { margin-top: 0; }
+    .formula-box {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      text-align: center;
+      padding: 0.4rem 0.25rem;
+      margin: 0 0 0.45rem;
+    }
+    .formula-box .katex { font-size: 1.05em; }
     fieldset {
       border: 3px groove var(--cyan);
       margin: 0 0 0.85rem;
@@ -145,6 +165,12 @@
         <p><strong>Nasıl kullanılır?</strong> <strong>n</strong> = deneme sayısı, <strong>p</strong> = tek bir denemede başarı olasılığı (0 ile 1 arası), <strong>x</strong> = merak ettiğin başarı sayısı. <strong>PDF (kütle)</strong> tam olarak <em>x</em> başarı görme olasılığını verir. <strong>CDF (birikimli)</strong> ise <em>x</em> veya daha az başarı görme olasılığını verir.</p>
         <p><strong>Örnek:</strong> Bir madeni parayı 10 kez atıyorsun; yazı gelme olasılığı 0,5. Tam 6 kez yazı gelme olasılığı için n=10, p=0,5, x=6 ve PDF seçersin. En fazla 3 yazı gelme olasılığı için aynı n ve p ile x=3 ve CDF seçersin.</p>
       </div>
+      <div class="formulas" aria-label="Binomial olasılık formülleri">
+        <p class="formula-caption"><strong>PDF</strong> — kütle fonksiyonu (tam <em>x</em> başarı)</p>
+        <div class="formula-box" data-tex="P(X=x)=\binom{n}{x}\,p^{x}(1-p)^{\,n-x}"></div>
+        <p class="formula-caption"><strong>CDF</strong> — birikimli (en fazla <em>x</em> başarı)</p>
+        <div class="formula-box" data-tex="P(X\le x)=\sum_{i=0}^{x}\binom{n}{i}\,p^{i}(1-p)^{\,n-i}"></div>
+      </div>
       <fieldset>
         <legend>Girdiler</legend>
         <div class="row"><label for="bn">n</label> <input type="number" id="bn" min="0" step="1" value="10" /></div>
@@ -169,6 +195,12 @@
         <p><strong>Nasıl kullanılır?</strong> <strong>λ</strong> = beklenen (ortalama) olay sayısı, <strong>k</strong> = tam olarak kaç olay istediğin. <strong>PDF</strong> tam <em>k</em> olay görme olasılığıdır. <strong>CDF</strong> en fazla <em>k</em> olay görme olasılığıdır.</p>
         <p><strong>Örnek:</strong> Bir çağrı merkezine saatte ortalama 4 telefon geliyorsa, belirli bir saatte tam 2 çağrı gelme olasılığı için λ=4, k=2 ve PDF seçersin.</p>
       </div>
+      <div class="formulas" aria-label="Poisson olasılık formülleri">
+        <p class="formula-caption"><strong>PDF</strong> — kütle fonksiyonu (tam <em>k</em> olay)</p>
+        <div class="formula-box" data-tex="P(X=k)=\dfrac{\lambda^{k} e^{-\lambda}}{k!}"></div>
+        <p class="formula-caption"><strong>CDF</strong> — birikimli (en fazla <em>k</em> olay)</p>
+        <div class="formula-box" data-tex="P(X\le k)=\sum_{i=0}^{k}\dfrac{\lambda^{i} e^{-\lambda}}{i!}"></div>
+      </div>
       <fieldset>
         <legend>Girdiler</legend>
         <div class="row"><label for="pl">λ</label> <input type="number" id="pl" min="0" step="any" value="4" /></div>
@@ -190,7 +222,14 @@
       <p><a href="https://github.com/ardataskinn" rel="noopener noreferrer" target="_blank">github.com/ardataskinn</a></p>
     </footer>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
   <script>
+    document.querySelectorAll(".formula-box[data-tex]").forEach((el) => {
+      const tex = el.getAttribute("data-tex");
+      if (tex && typeof katex !== "undefined") {
+        katex.render(tex, el, { displayMode: true, throwOnError: false });
+      }
+    });
     function binomialCoef(n, k) {
       if (k < 0 || k > n) return 0;
       k = Math.min(k, n - k);
