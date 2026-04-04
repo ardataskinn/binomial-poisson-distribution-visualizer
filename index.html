@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Binomial ve Poisson Dağılımı Hesaplama | Olasılık Hesaplayıcı</title>
+  <meta name="description" content="Binomial dağılımı ve Poisson dağılımı olasılık hesaplama aracı. PDF (kütle) ve CDF (birikimli) hesaplayın. n, p, x ve lambda ile pratik hesaplama." />
+  <meta name="keywords" content="binomial dağılımı, binomial distribution, poisson dağılımı, poisson distribution, olasılık hesaplama, binomial hesaplama, poisson hesaplama, PDF, CDF, birikimli dağılım fonksiyonu, kütle fonksiyonu, istatistik" />
+  <meta name="author" content="Arda Taşkın" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ardataskinn.github.io/binomial-poisson-calculator/" />
+  <meta property="og:title" content="Binomial ve Poisson Dağılımı Hesaplama" />
+  <meta property="og:description" content="Binomial ve Poisson olasılıklarını PDF veya CDF olarak hesaplayın. Türkçe açıklamalı basit araç." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="tr_TR" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Binomial ve Poisson Dağılımı Hesaplama" />
+  <meta name="twitter:description" content="Binomial ve Poisson olasılık hesaplayıcı — PDF ve CDF." />
+  <style>
+    :root {
+      --bg: #330066;
+      --paper: #fffef0;
+      --cyan: #00ffff;
+      --magenta: #ff00cc;
+      --lime: #ccff00;
+      --orange: #ff9900;
+      --border: #000;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: var(--bg);
+      background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+      color: #111;
+      line-height: 1.5;
+      padding: 1.25rem;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: var(--lime);
+      text-shadow: 3px 3px 0 var(--magenta), -1px -1px 0 var(--cyan);
+      font-size: clamp(1.35rem, 4vw, 1.85rem);
+      margin: 0 0 1rem;
+      letter-spacing: 0.02em;
+    }
+    .card {
+      background: var(--paper);
+      border: 4px solid var(--border);
+      box-shadow: 8px 8px 0 var(--orange);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.15rem;
+      color: var(--bg);
+      border-bottom: 3px dashed var(--magenta);
+      padding-bottom: 0.35rem;
+    }
+    .explain {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+    .explain strong { color: #6600aa; }
+    fieldset {
+      border: 3px groove var(--cyan);
+      margin: 0 0 0.85rem;
+      padding: 0.65rem 0.85rem;
+      background: #f0fff8;
+    }
+    legend {
+      font-weight: bold;
+      color: var(--bg);
+      padding: 0 0.35rem;
+    }
+    label {
+      display: inline-block;
+      min-width: 2.5rem;
+      font-size: 0.9rem;
+    }
+    input[type="number"], select {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.35rem 0.5rem;
+      border: 2px solid var(--border);
+      margin: 0.2rem 0.5rem 0.2rem 0;
+      max-width: 8rem;
+    }
+    .row { margin: 0.35rem 0; }
+    button {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 0.5rem 1.25rem;
+      margin-top: 0.5rem;
+      background: linear-gradient(180deg, var(--lime), #99cc00);
+      border: 3px solid var(--border);
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--border);
+    }
+    button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--border);
+    }
+    .out {
+      margin-top: 0.85rem;
+      padding: 0.75rem;
+      background: #e6f7ff;
+      border: 2px solid var(--bg);
+      font-size: 1.05rem;
+    }
+    .out .val {
+      font-weight: bold;
+      color: #006600;
+      font-size: 1.2rem;
+    }
+    .err { color: #cc0000; font-weight: bold; }
+    footer {
+      text-align: center;
+      color: var(--cyan);
+      font-size: 0.95rem;
+      padding: 1.5rem 0.5rem 2rem;
+    }
+    footer a {
+      color: var(--lime);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>★ Binomial &amp; Poisson ★<br />Olasılık Hesaplayıcı</h1>
+
+    <section class="card" aria-labelledby="binomial-title">
+      <h2 id="binomial-title">Binomial dağılımı</h2>
+      <div class="explain">
+        <p><strong>Binomial hesaplama nedir?</strong> Aynı deneyi birçok kez tekrarladığında, her seferinde sadece iki sonuçtan biri olabiliyorsa (örneğin “başarı / başarısızlık”) ve her denemede başarı olasılığı <strong>p</strong> sabitse, toplam <strong>kaç kez başarı</strong> göreceğini binomial dağılımı ile modelleyebilirsin.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>n</strong> = deneme sayısı, <strong>p</strong> = tek bir denemede başarı olasılığı (0 ile 1 arası), <strong>x</strong> = merak ettiğin başarı sayısı. <strong>PDF (kütle)</strong> tam olarak <em>x</em> başarı görme olasılığını verir. <strong>CDF (birikimli)</strong> ise <em>x</em> veya daha az başarı görme olasılığını verir.</p>
+        <p><strong>Örnek:</strong> Bir madeni parayı 10 kez atıyorsun; yazı gelme olasılığı 0,5. Tam 6 kez yazı gelme olasılığı için n=10, p=0,5, x=6 ve PDF seçersin. En fazla 3 yazı gelme olasılığı için aynı n ve p ile x=3 ve CDF seçersin.</p>
+      </div>
+      <fieldset>
+        <legend>Girdiler</legend>
+        <div class="row"><label for="bn">n</label> <input type="number" id="bn" min="0" step="1" value="10" /></div>
+        <div class="row"><label for="bp">p</label> <input type="number" id="bp" min="0" max="1" step="any" value="0.5" /></div>
+        <div class="row"><label for="bx">x</label> <input type="number" id="bx" min="0" step="1" value="6" /></div>
+        <div class="row">
+          <label for="bmode">Tür</label>
+          <select id="bmode">
+            <option value="pdf">PDF — P(X = x)</option>
+            <option value="cdf">CDF — P(X ≤ x)</option>
+          </select>
+        </div>
+        <button type="button" id="bcalc">Hesapla</button>
+        <div class="out" id="bout" aria-live="polite"></div>
+      </fieldset>
+    </section>
+
+    <section class="card" aria-labelledby="poisson-title">
+      <h2 id="poisson-title">Poisson dağılımı</h2>
+      <div class="explain">
+        <p><strong>Poisson nedir?</strong> Sabit bir zaman veya alan içinde <strong>nadir</strong> olayların sayısını modellemek için kullanılır. Ortalama olay sayısı <strong>λ (lambda)</strong> ile özetlenir.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>λ</strong> = beklenen (ortalama) olay sayısı, <strong>k</strong> = tam olarak kaç olay istediğin. <strong>PDF</strong> tam <em>k</em> olay görme olasılığıdır. <strong>CDF</strong> en fazla <em>k</em> olay görme olasılığıdır.</p>
+        <p><strong>Örnek:</strong> Bir çağrı merkezine saatte ortalama 4 telefon geliyorsa, belirli bir saatte tam 2 çağrı gelme olasılığı için λ=4, k=2 ve PDF seçersin.</p>
+      </div>
+      <fieldset>
+        <legend>Girdiler</legend>
+        <div class="row"><label for="pl">λ</label> <input type="number" id="pl" min="0" step="any" value="4" /></div>
+        <div class="row"><label for="pk">k</label> <input type="number" id="pk" min="0" step="1" value="2" /></div>
+        <div class="row">
+          <label for="pmode">Tür</label>
+          <select id="pmode">
+            <option value="pdf">PDF — P(X = k)</option>
+            <option value="cdf">CDF — P(X ≤ k)</option>
+          </select>
+        </div>
+        <button type="button" id="pcalc">Hesapla</button>
+        <div class="out" id="pout" aria-live="polite"></div>
+      </fieldset>
+    </section>
+
+    <footer>
+      <p>Arda Taşkın</p>
+      <p><a href="https://github.com/ardataskinn" rel="noopener noreferrer" target="_blank">github.com/ardataskinn</a></p>
+    </footer>
+  </div>
+  <script>
+    function binomialCoef(n, k) {
+      if (k < 0 || k > n) return 0;
+      k = Math.min(k, n - k);
+      let r = 1;
+      for (let i = 0; i < k; i++) r = (r * (n - i)) / (i + 1);
+      return r;
+    }
+    function binomialPMF(n, p, x) {
+      const xi = Math.round(x);
+      if (xi < 0 || xi > n) return 0;
+      return binomialCoef(n, xi) * Math.pow(p, xi) * Math.pow(1 - p, n - xi);
+    }
+    function binomialCDF(n, p, x) {
+      const cap = Math.min(Math.floor(x), n);
+      let s = 0;
+      for (let k = 0; k <= cap; k++) s += binomialPMF(n, p, k);
+      return Math.min(1, s);
+    }
+    function logFactorial(n) {
+      if (n <= 1) return 0;
+      let s = 0;
+      for (let i = 2; i <= n; i++) s += Math.log(i);
+      return s;
+    }
+    function poissonPMF(lambda, k) {
+      const ki = Math.round(k);
+      if (ki < 0 || lambda < 0) return 0;
+      if (lambda === 0) return ki === 0 ? 1 : 0;
+      return Math.exp(ki * Math.log(lambda) - lambda - logFactorial(ki));
+    }
+    function poissonCDF(lambda, k) {
+      const cap = Math.floor(k);
+      if (cap < 0) return 0;
+      let s = 0;
+      for (let i = 0; i <= cap; i++) s += poissonPMF(lambda, i);
+      return Math.min(1, s);
+    }
+    function fmt(p) {
+      if (!isFinite(p)) return "—";
+      if (p === 0) return "0";
+      if (p === 1) return "1";
+      return p.toPrecision(8);
+    }
+    document.getElementById("bcalc").addEventListener("click", () => {
+      const n = Number(document.getElementById("bn").value);
+      const p = Number(document.getElementById("bp").value);
+      const x = Number(document.getElementById("bx").value);
+      const mode = document.getElementById("bmode").value;
+      const el = document.getElementById("bout");
+      if (!Number.isInteger(n) || n < 0) {
+        el.innerHTML = '<span class="err">n pozitif tam sayı olmalı.</span>';
+        return;
+      }
+      if (p < 0 || p > 1 || !isFinite(p)) {
+        el.innerHTML = '<span class="err">p 0 ile 1 arasında olmalı.</span>';
+        return;
+      }
+      if (!Number.isInteger(x) || x < 0) {
+        el.innerHTML = '<span class="err">x negatif olmayan tam sayı olmalı.</span>';
+        return;
+      }
+      if (x > n && mode === "pdf") {
+        el.innerHTML = '<span class="err">x, n’den büyük olamaz (PDF için).</span>';
+        return;
+      }
+      const val = mode === "pdf" ? binomialPMF(n, p, x) : binomialCDF(n, p, x);
+      const label = mode === "pdf" ? "P(X = " + x + ")" : "P(X ≤ " + x + ")";
+      el.innerHTML = label + " = <span class=\"val\">" + fmt(val) + "</span>";
+    });
+    document.getElementById("pcalc").addEventListener("click", () => {
+      const lambda = Number(document.getElementById("pl").value);
+      const k = Number(document.getElementById("pk").value);
+      const mode = document.getElementById("pmode").value;
+      const el = document.getElementById("pout");
+      if (lambda < 0 || !isFinite(lambda)) {
+        el.innerHTML = '<span class="err">λ sıfır veya pozitif olmalı.</span>';
+        return;
+      }
+      if (!Number.isInteger(k) || k < 0) {
+        el.innerHTML = '<span class="err">k negatif olmayan tam sayı olmalı.</span>';
+        return;
+      }
+      const val = mode === "pdf" ? poissonPMF(lambda, k) : poissonCDF(lambda, k);
+      const label = mode === "pdf" ? "P(X = " + k + ")" : "P(X ≤ " + k + ")";
+      el.innerHTML = label + " = <span class=\"val\">" + fmt(val) + "</span>";
+    });
+  </script>
+</body>
+</html>
