@@ -130,6 +130,13 @@
       transform: translate(2px, 2px);
       box-shadow: 2px 2px 0 var(--border);
     }
+    button.btn-comp {
+      margin-top: 0.65rem;
+      margin-bottom: 0;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.85rem;
+      background: linear-gradient(180deg, #ffccff, #dd88dd);
+    }
     .out {
       margin-top: 0.85rem;
       padding: 0.75rem;
@@ -184,7 +191,10 @@
           </select>
         </div>
         <button type="button" id="bcalc">Hesapla</button>
-        <div class="out" id="bout" aria-live="polite"></div>
+        <div class="out">
+          <div id="bout" aria-live="polite"></div>
+          <button type="button" id="bcomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+        </div>
       </fieldset>
     </section>
 
@@ -213,7 +223,10 @@
           </select>
         </div>
         <button type="button" id="pcalc">Hesapla</button>
-        <div class="out" id="pout" aria-live="polite"></div>
+        <div class="out">
+          <div id="pout" aria-live="polite"></div>
+          <button type="button" id="pcomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+        </div>
       </fieldset>
     </section>
 
@@ -267,11 +280,31 @@
       for (let i = 0; i <= cap; i++) s += poissonPMF(lambda, i);
       return Math.min(1, s);
     }
-    function fmt(p) {
+    function fmt3(p) {
       if (!isFinite(p)) return "—";
-      if (p === 0) return "0";
-      if (p === 1) return "1";
-      return p.toPrecision(8);
+      return p.toLocaleString("tr-TR", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    }
+    const bState = { label: "", raw: null, complement: false };
+    const pState = { label: "", raw: null, complement: false };
+    function renderBinomial() {
+      const el = document.getElementById("bout");
+      const btn = document.getElementById("bcomp");
+      if (bState.raw === null) return;
+      const v = bState.complement ? 1 - bState.raw : bState.raw;
+      const prefix = bState.complement ? "1 − " : "";
+      el.innerHTML = prefix + bState.label + " = <span class=\"val\">" + fmt3(v) + "</span>";
+      btn.hidden = false;
+      btn.textContent = bState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
+    }
+    function renderPoisson() {
+      const el = document.getElementById("pout");
+      const btn = document.getElementById("pcomp");
+      if (pState.raw === null) return;
+      const v = pState.complement ? 1 - pState.raw : pState.raw;
+      const prefix = pState.complement ? "1 − " : "";
+      el.innerHTML = prefix + pState.label + " = <span class=\"val\">" + fmt3(v) + "</span>";
+      btn.hidden = false;
+      btn.textContent = pState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
     }
     document.getElementById("bcalc").addEventListener("click", () => {
       const n = Number(document.getElementById("bn").value);
@@ -279,6 +312,10 @@
       const x = Number(document.getElementById("bx").value);
       const mode = document.getElementById("bmode").value;
       const el = document.getElementById("bout");
+      const btn = document.getElementById("bcomp");
+      bState.raw = null;
+      bState.complement = false;
+      btn.hidden = true;
       if (!Number.isInteger(n) || n < 0) {
         el.innerHTML = '<span class="err">n pozitif tam sayı olmalı.</span>';
         return;
@@ -296,14 +333,25 @@
         return;
       }
       const val = mode === "pdf" ? binomialPMF(n, p, x) : binomialCDF(n, p, x);
-      const label = mode === "pdf" ? "P(X = " + x + ")" : "P(X ≤ " + x + ")";
-      el.innerHTML = label + " = <span class=\"val\">" + fmt(val) + "</span>";
+      bState.label = mode === "pdf" ? "P(X = " + x + ")" : "P(X ≤ " + x + ")";
+      bState.raw = val;
+      bState.complement = false;
+      renderBinomial();
+    });
+    document.getElementById("bcomp").addEventListener("click", () => {
+      if (bState.raw === null) return;
+      bState.complement = !bState.complement;
+      renderBinomial();
     });
     document.getElementById("pcalc").addEventListener("click", () => {
       const lambda = Number(document.getElementById("pl").value);
       const k = Number(document.getElementById("pk").value);
       const mode = document.getElementById("pmode").value;
       const el = document.getElementById("pout");
+      const btn = document.getElementById("pcomp");
+      pState.raw = null;
+      pState.complement = false;
+      btn.hidden = true;
       if (lambda < 0 || !isFinite(lambda)) {
         el.innerHTML = '<span class="err">λ sıfır veya pozitif olmalı.</span>';
         return;
@@ -313,8 +361,15 @@
         return;
       }
       const val = mode === "pdf" ? poissonPMF(lambda, k) : poissonCDF(lambda, k);
-      const label = mode === "pdf" ? "P(X = " + k + ")" : "P(X ≤ " + k + ")";
-      el.innerHTML = label + " = <span class=\"val\">" + fmt(val) + "</span>";
+      pState.label = mode === "pdf" ? "P(X = " + k + ")" : "P(X ≤ " + k + ")";
+      pState.raw = val;
+      pState.complement = false;
+      renderPoisson();
+    });
+    document.getElementById("pcomp").addEventListener("click", () => {
+      if (pState.raw === null) return;
+      pState.complement = !pState.complement;
+      renderPoisson();
     });
   </script>
 </body>
