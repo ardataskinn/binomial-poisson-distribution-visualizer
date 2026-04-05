@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Binomial ve Poisson Dağılımı Hesaplama | Olasılık Hesaplayıcı</title>
-  <meta name="description" content="Binomial dağılımı ve Poisson dağılımı olasılık hesaplama aracı. PDF (kütle) ve CDF (birikimli) hesaplayın. n, p, x ve lambda ile pratik hesaplama." />
-  <meta name="keywords" content="binomial dağılımı, binomial distribution, poisson dağılımı, poisson distribution, olasılık hesaplama, binomial hesaplama, poisson hesaplama, PDF, CDF, birikimli dağılım fonksiyonu, kütle fonksiyonu, istatistik" />
+  <title>Binomial, Poisson ve Normal Dağılımı Hesaplama | Olasılık Hesaplayıcı</title>
+  <meta name="description" content="Binomial, Poisson ve Normal dağılımı olasılık hesaplama aracı. PDF ve CDF, Z skoru ve tamamlayıcı olasılık." />
+  <meta name="keywords" content="binomial dağılımı, poisson dağılımı, normal dağılımı, z skoru, olasılık hesaplama, PDF, CDF, istatistik" />
   <meta name="author" content="Arda Taşkın" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://ardataskinn.github.io/binomial-poisson-calculator/" />
-  <meta property="og:title" content="Binomial ve Poisson Dağılımı Hesaplama" />
-  <meta property="og:description" content="Binomial ve Poisson olasılıklarını PDF veya CDF olarak hesaplayın. Türkçe açıklamalı basit araç." />
+  <meta property="og:title" content="Binomial, Poisson ve Normal Dağılımı Hesaplama" />
+  <meta property="og:description" content="Binomial, Poisson ve Normal dağılımı; PDF, CDF, Z skoru ve tamamlayıcı olasılık." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="tr_TR" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Binomial ve Poisson Dağılımı Hesaplama" />
-  <meta name="twitter:description" content="Binomial ve Poisson olasılık hesaplayıcı — PDF ve CDF." />
+  <meta name="twitter:title" content="Binomial, Poisson ve Normal Dağılımı Hesaplama" />
+  <meta name="twitter:description" content="Binomial, Poisson ve Normal — PDF, CDF ve Z skoru." />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
   <style>
     :root {
@@ -233,7 +233,7 @@
     </div>
   </div>
   <div class="wrap">
-    <h1>★ Binomial &amp; Poisson ★<br />Olasılık Hesaplayıcı</h1>
+    <h1>★ Binomial, Poisson &amp; Normal ★<br />Olasılık Hesaplayıcı</h1>
 
     <section class="card" aria-labelledby="binomial-title">
       <h2 id="binomial-title">Binomial dağılımı</h2>
@@ -300,6 +300,41 @@
       </fieldset>
     </section>
 
+    <section class="card" aria-labelledby="normal-title">
+      <h2 id="normal-title">Normal dağılımı</h2>
+      <div class="explain">
+        <p><strong>Normal dağılım nedir?</strong> Birçok doğal ve ölçülen büyüklük, ortalama <strong>μ (mü)</strong> ve standart sapma <strong>σ (sigma)</strong> ile tanımlanan çan eğrisine yakın dağılır.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>μ</strong> = ortalama, <strong>σ</strong> = standart sapma (pozitif), <strong>x</strong> = ilgilendiğin değer. <strong>Z</strong> = (x − μ) / σ, standart normal ölçeğe taşınmış değerdir. <strong>PDF</strong> o noktadaki yoğunluk f(x)’tir. <strong>CDF</strong> P(X ≤ x) olasılığıdır ve Φ(z) ile aynıdır.</p>
+        <p><strong>Örnek:</strong> μ=100, σ=15 ve x=115 ise Z=1 ve yaklaşık P(X ≤ 115) ≈ 0,84 civarındadır.</p>
+      </div>
+      <div class="formulas" aria-label="Normal dağılım formülleri">
+        <p class="formula-caption"><strong>Z skoru</strong></p>
+        <div class="formula-box" data-tex="Z=\dfrac{X-\mu}{\sigma}"></div>
+        <p class="formula-caption"><strong>PDF</strong> — yoğunluk f(x)</p>
+        <div class="formula-box" data-tex="f(x)=\dfrac{1}{\sigma\sqrt{2\pi}}\exp\!\left(-\dfrac{(x-\mu)^2}{2\sigma^2}\right)"></div>
+        <p class="formula-caption"><strong>CDF</strong> — P(X ≤ x) = Φ(z)</p>
+        <div class="formula-box" data-tex="P(X\le x)=\Phi(z)=\displaystyle\int_{-\infty}^{z}\dfrac{1}{\sqrt{2\pi}}e^{-t^2/2}\,dt"></div>
+      </div>
+      <fieldset>
+        <legend>Girdiler</legend>
+        <div class="row"><label for="nmu">μ</label> <input type="number" id="nmu" step="any" value="100" /></div>
+        <div class="row"><label for="nsigma">σ</label> <input type="number" id="nsigma" min="0" step="any" value="15" /></div>
+        <div class="row"><label for="nx">x</label> <input type="number" id="nx" step="any" value="115" /></div>
+        <div class="row">
+          <label for="nmode">Tür</label>
+          <select id="nmode">
+            <option value="pdf">PDF — f(x) yoğunluk</option>
+            <option value="cdf">CDF — P(X ≤ x)</option>
+          </select>
+        </div>
+        <button type="button" id="ncalc">Hesapla</button>
+        <div class="out">
+          <div id="nout" aria-live="polite"></div>
+          <button type="button" id="ncomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+        </div>
+      </fieldset>
+    </section>
+
     <footer>
       <p>Arda Taşkın</p>
       <p><a href="https://github.com/ardataskinn" rel="noopener noreferrer" target="_blank">github.com/ardataskinn</a></p>
@@ -350,6 +385,34 @@
       for (let i = 0; i <= cap; i++) s += poissonPMF(lambda, i);
       return Math.min(1, s);
     }
+    /** Abramowitz–Stegun 7.1.26 — error function */
+    function erf(x) {
+      const a1 = 0.254829592;
+      const a2 = -0.284496736;
+      const a3 = 1.421413741;
+      const a4 = -1.453152027;
+      const a5 = 1.061405429;
+      const p = 0.3275911;
+      const sign = x < 0 ? -1 : 1;
+      x = Math.abs(x);
+      const t = 1 / (1 + p * x);
+      const y = 1 - (((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t) * Math.exp(-x * x);
+      return sign * y;
+    }
+    function standardNormalCDF(z) {
+      return 0.5 * (1 + erf(z / Math.SQRT2));
+    }
+    function standardNormalPDF(z) {
+      return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+    }
+    function normalPDF(mu, sigma, x) {
+      const z = (x - mu) / sigma;
+      return standardNormalPDF(z) / sigma;
+    }
+    function normalCDF(mu, sigma, x) {
+      const z = (x - mu) / sigma;
+      return standardNormalCDF(z);
+    }
     const LS_DECIMALS = "bpProbDecimals";
     function clampDecimals(n) {
       const x = Math.round(Number(n));
@@ -376,9 +439,11 @@
     }
     const bState = { label: "", raw: null, complement: false };
     const pState = { label: "", raw: null, complement: false };
+    const nState = { label: "", raw: null, complement: false, mode: "cdf", z: null };
     function refreshDisplayedResults() {
       if (bState.raw !== null) renderBinomial();
       if (pState.raw !== null) renderPoisson();
+      if (nState.raw !== null) renderNormal();
     }
     function renderBinomial() {
       const el = document.getElementById("bout");
@@ -399,6 +464,22 @@
       el.innerHTML = prefix + pState.label + " = <span class=\"val\">" + fmtProb(v) + "</span>";
       btn.hidden = false;
       btn.textContent = pState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
+    }
+    function renderNormal() {
+      const el = document.getElementById("nout");
+      const btn = document.getElementById("ncomp");
+      if (nState.raw === null || nState.z === null) return;
+      const zLine = "Z = (x − μ) / σ = <span class=\"val\">" + fmtProb(nState.z) + "</span>";
+      if (nState.mode === "pdf") {
+        el.innerHTML = zLine + "<br>" + nState.label + " = <span class=\"val\">" + fmtProb(nState.raw) + "</span>";
+        btn.hidden = true;
+        return;
+      }
+      const v = nState.complement ? 1 - nState.raw : nState.raw;
+      const prefix = nState.complement ? "1 − " : "";
+      el.innerHTML = zLine + "<br>" + prefix + nState.label + " = <span class=\"val\">" + fmtProb(v) + "</span>";
+      btn.hidden = false;
+      btn.textContent = nState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
     }
     document.getElementById("bcalc").addEventListener("click", () => {
       const n = Number(document.getElementById("bn").value);
@@ -464,6 +545,43 @@
       if (pState.raw === null) return;
       pState.complement = !pState.complement;
       renderPoisson();
+    });
+    document.getElementById("ncalc").addEventListener("click", () => {
+      const mu = Number(document.getElementById("nmu").value);
+      const sigma = Number(document.getElementById("nsigma").value);
+      const x = Number(document.getElementById("nx").value);
+      const mode = document.getElementById("nmode").value;
+      const el = document.getElementById("nout");
+      const btn = document.getElementById("ncomp");
+      nState.raw = null;
+      nState.z = null;
+      nState.complement = false;
+      nState.mode = mode;
+      btn.hidden = true;
+      if (!isFinite(mu) || !isFinite(sigma) || !isFinite(x)) {
+        el.innerHTML = '<span class="err">μ, σ ve x geçerli sayılar olmalı.</span>';
+        return;
+      }
+      if (sigma <= 0) {
+        el.innerHTML = '<span class="err">σ sıfırdan büyük olmalı.</span>';
+        return;
+      }
+      const z = (x - mu) / sigma;
+      nState.z = z;
+      if (mode === "pdf") {
+        nState.label = "f(x)";
+        nState.raw = normalPDF(mu, sigma, x);
+      } else {
+        nState.label = "P(X ≤ " + x + ")";
+        nState.raw = normalCDF(mu, sigma, x);
+      }
+      nState.complement = false;
+      renderNormal();
+    });
+    document.getElementById("ncomp").addEventListener("click", () => {
+      if (nState.raw === null || nState.mode !== "cdf") return;
+      nState.complement = !nState.complement;
+      renderNormal();
     });
     (function settingsUi() {
       const panel = document.getElementById("settingsPanel");
