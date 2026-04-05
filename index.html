@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Binomial, Poisson ve Normal Dağılımı Hesaplama | Olasılık Hesaplayıcı</title>
-  <meta name="description" content="Binomial, Poisson ve Normal dağılımı olasılık hesaplama aracı. PDF ve CDF, Z skoru ve tamamlayıcı olasılık." />
-  <meta name="keywords" content="binomial dağılımı, poisson dağılımı, normal dağılımı, z skoru, olasılık hesaplama, PDF, CDF, istatistik" />
+  <meta name="description" content="Binomial ve Poisson için PMF ve CDF; Normal dağılım için PDF, CDF ve doğrudan Z ile olasılık." />
+  <meta name="keywords" content="binomial dağılımı, poisson dağılımı, normal dağılımı, PMF, PDF, CDF, z skoru, olasılık hesaplama, istatistik" />
   <meta name="author" content="Arda Taşkın" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://ardataskinn.github.io/binomial-poisson-calculator/" />
   <meta property="og:title" content="Binomial, Poisson ve Normal Dağılımı Hesaplama" />
-  <meta property="og:description" content="Binomial, Poisson ve Normal dağılımı; PDF, CDF, Z skoru ve tamamlayıcı olasılık." />
+  <meta property="og:description" content="Binomial ve Poisson PMF/CDF; Normal PDF/CDF ve doğrudan Z." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="tr_TR" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Binomial, Poisson ve Normal Dağılımı Hesaplama" />
-  <meta name="twitter:description" content="Binomial, Poisson ve Normal — PDF, CDF ve Z skoru." />
+  <meta name="twitter:description" content="Binomial ve Poisson PMF/CDF; Normal PDF/CDF ve Z." />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
   <style>
     :root {
@@ -216,6 +216,36 @@
       background: transparent;
     }
     .settings-backdrop[hidden] { display: none !important; }
+    .normal-twocol {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .normal-col {
+      min-width: 0;
+      border: 2px dashed #6699cc;
+      padding: 0.55rem 0.65rem 0.65rem;
+      background: #fafdff;
+    }
+    .normal-col-title {
+      margin: 0 0 0.5rem;
+      font-size: 0.9rem;
+      color: var(--bg);
+    }
+    .normal-col-hint {
+      font-weight: normal;
+      font-size: 0.8rem;
+      color: #444;
+    }
+    .normal-col button {
+      margin-top: 0.45rem;
+    }
+    @media (max-width: 560px) {
+      .normal-twocol {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -239,11 +269,11 @@
       <h2 id="binomial-title">Binomial dağılımı</h2>
       <div class="explain">
         <p><strong>Binomial hesaplama nedir?</strong> Aynı deneyi birçok kez tekrarladığında, her seferinde sadece iki sonuçtan biri olabiliyorsa (örneğin “başarı / başarısızlık”) ve her denemede başarı olasılığı <strong>p</strong> sabitse, toplam <strong>kaç kez başarı</strong> göreceğini binomial dağılımı ile modelleyebilirsin.</p>
-        <p><strong>Nasıl kullanılır?</strong> <strong>n</strong> = deneme sayısı, <strong>p</strong> = tek bir denemede başarı olasılığı (0 ile 1 arası), <strong>x</strong> = merak ettiğin başarı sayısı. <strong>PDF (kütle)</strong> tam olarak <em>x</em> başarı görme olasılığını verir. <strong>CDF (birikimli)</strong> ise <em>x</em> veya daha az başarı görme olasılığını verir.</p>
-        <p><strong>Örnek:</strong> Bir madeni parayı 10 kez atıyorsun; yazı gelme olasılığı 0,5. Tam 6 kez yazı gelme olasılığı için n=10, p=0,5, x=6 ve PDF seçersin. En fazla 3 yazı gelme olasılığı için aynı n ve p ile x=3 ve CDF seçersin.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>n</strong> = deneme sayısı, <strong>p</strong> = tek bir denemede başarı olasılığı (0 ile 1 arası), <strong>x</strong> = merak ettiğin başarı sayısı. <strong>PMF (olasılık kütle fonksiyonu)</strong> tam olarak <em>x</em> başarı görme olasılığını verir. <strong>CDF (birikimli)</strong> ise <em>x</em> veya daha az başarı görme olasılığını verir.</p>
+        <p><strong>Örnek:</strong> Bir madeni parayı 10 kez atıyorsun; yazı gelme olasılığı 0,5. Tam 6 kez yazı gelme olasılığı için n=10, p=0,5, x=6 ve PMF seçersin. En fazla 3 yazı gelme olasılığı için aynı n ve p ile x=3 ve CDF seçersin.</p>
       </div>
       <div class="formulas" aria-label="Binomial olasılık formülleri">
-        <p class="formula-caption"><strong>PDF</strong> — kütle fonksiyonu (tam <em>x</em> başarı)</p>
+        <p class="formula-caption"><strong>PMF</strong> — olasılık kütle fonksiyonu (tam <em>x</em> başarı)</p>
         <div class="formula-box" data-tex="P(X=x)=\binom{n}{x}\,p^{x}(1-p)^{\,n-x}"></div>
         <p class="formula-caption"><strong>CDF</strong> — birikimli (en fazla <em>x</em> başarı)</p>
         <div class="formula-box" data-tex="P(X\le x)=\sum_{i=0}^{x}\binom{n}{i}\,p^{i}(1-p)^{\,n-i}"></div>
@@ -256,7 +286,7 @@
         <div class="row">
           <label for="bmode">Tür</label>
           <select id="bmode">
-            <option value="pdf">PDF — P(X = x)</option>
+            <option value="pmf">PMF — P(X = x)</option>
             <option value="cdf">CDF — P(X ≤ x)</option>
           </select>
         </div>
@@ -272,11 +302,11 @@
       <h2 id="poisson-title">Poisson dağılımı</h2>
       <div class="explain">
         <p><strong>Poisson nedir?</strong> Sabit bir zaman veya alan içinde <strong>nadir</strong> olayların sayısını modellemek için kullanılır. Ortalama olay sayısı <strong>λ (lambda)</strong> ile özetlenir.</p>
-        <p><strong>Nasıl kullanılır?</strong> <strong>λ</strong> = beklenen (ortalama) olay sayısı, <strong>k</strong> = tam olarak kaç olay istediğin. <strong>PDF</strong> tam <em>k</em> olay görme olasılığıdır. <strong>CDF</strong> en fazla <em>k</em> olay görme olasılığıdır.</p>
-        <p><strong>Örnek:</strong> Bir çağrı merkezine saatte ortalama 4 telefon geliyorsa, belirli bir saatte tam 2 çağrı gelme olasılığı için λ=4, k=2 ve PDF seçersin.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>λ</strong> = beklenen (ortalama) olay sayısı, <strong>k</strong> = tam olarak kaç olay istediğin. <strong>PMF</strong> tam <em>k</em> olay görme olasılığıdır. <strong>CDF</strong> en fazla <em>k</em> olay görme olasılığıdır.</p>
+        <p><strong>Örnek:</strong> Bir çağrı merkezine saatte ortalama 4 telefon geliyorsa, belirli bir saatte tam 2 çağrı gelme olasılığı için λ=4, k=2 ve PMF seçersin.</p>
       </div>
       <div class="formulas" aria-label="Poisson olasılık formülleri">
-        <p class="formula-caption"><strong>PDF</strong> — kütle fonksiyonu (tam <em>k</em> olay)</p>
+        <p class="formula-caption"><strong>PMF</strong> — olasılık kütle fonksiyonu (tam <em>k</em> olay)</p>
         <div class="formula-box" data-tex="P(X=k)=\dfrac{\lambda^{k} e^{-\lambda}}{k!}"></div>
         <p class="formula-caption"><strong>CDF</strong> — birikimli (en fazla <em>k</em> olay)</p>
         <div class="formula-box" data-tex="P(X\le k)=\sum_{i=0}^{k}\dfrac{\lambda^{i} e^{-\lambda}}{i!}"></div>
@@ -288,7 +318,7 @@
         <div class="row">
           <label for="pmode">Tür</label>
           <select id="pmode">
-            <option value="pdf">PDF — P(X = k)</option>
+            <option value="pmf">PMF — P(X = k)</option>
             <option value="cdf">CDF — P(X ≤ k)</option>
           </select>
         </div>
@@ -304,7 +334,7 @@
       <h2 id="normal-title">Normal dağılımı</h2>
       <div class="explain">
         <p><strong>Normal dağılım nedir?</strong> Birçok doğal ve ölçülen büyüklük, ortalama <strong>μ (mü)</strong> ve standart sapma <strong>σ (sigma)</strong> ile tanımlanan çan eğrisine yakın dağılır.</p>
-        <p><strong>Nasıl kullanılır?</strong> <strong>μ</strong> = ortalama, <strong>σ</strong> = standart sapma (pozitif), <strong>x</strong> = ilgilendiğin değer. <strong>Z</strong> = (x − μ) / σ, standart normal ölçeğe taşınmış değerdir. <strong>PDF</strong> o noktadaki yoğunluk f(x)’tir. <strong>CDF</strong> P(X ≤ x) olasılığıdır ve Φ(z) ile aynıdır.</p>
+        <p><strong>Nasıl kullanılır?</strong> <strong>μ</strong> = ortalama, <strong>σ</strong> = standart sapma (pozitif), <strong>x</strong> = ilgilendiğin değer. <strong>Z</strong> = (x − μ) / σ, standart normal ölçeğe taşınmış değerdir. <strong>PDF</strong> sürekli dağılımda yoğunluk f(x)’tir. <strong>CDF</strong> P(X ≤ x) olasılığıdır ve Φ(z) ile aynıdır. Sağ sütunda <strong>Z</strong>’yi doğrudan girip standart normal için PDF veya CDF alabilirsin.</p>
         <p><strong>Örnek:</strong> μ=100, σ=15 ve x=115 ise Z=1 ve yaklaşık P(X ≤ 115) ≈ 0,84 civarındadır.</p>
       </div>
       <div class="formulas" aria-label="Normal dağılım formülleri">
@@ -317,20 +347,41 @@
       </div>
       <fieldset>
         <legend>Girdiler</legend>
-        <div class="row"><label for="nmu">μ</label> <input type="number" id="nmu" step="any" value="100" /></div>
-        <div class="row"><label for="nsigma">σ</label> <input type="number" id="nsigma" min="0" step="any" value="15" /></div>
-        <div class="row"><label for="nx">x</label> <input type="number" id="nx" step="any" value="115" /></div>
-        <div class="row">
-          <label for="nmode">Tür</label>
-          <select id="nmode">
-            <option value="pdf">PDF — f(x) yoğunluk</option>
-            <option value="cdf">CDF — P(X ≤ x)</option>
-          </select>
-        </div>
-        <button type="button" id="ncalc">Hesapla</button>
-        <div class="out">
-          <div id="nout" aria-live="polite"></div>
-          <button type="button" id="ncomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+        <div class="normal-twocol">
+          <div class="normal-col" aria-labelledby="normal-musx-title">
+            <p class="normal-col-title" id="normal-musx-title"><strong>μ, σ ve x</strong></p>
+            <div class="row"><label for="nmu">μ</label> <input type="number" id="nmu" step="any" value="100" /></div>
+            <div class="row"><label for="nsigma">σ</label> <input type="number" id="nsigma" min="0" step="any" value="15" /></div>
+            <div class="row"><label for="nx">x</label> <input type="number" id="nx" step="any" value="115" /></div>
+            <div class="row">
+              <label for="nmode">Tür</label>
+              <select id="nmode">
+                <option value="pdf">PDF — f(x) yoğunluk</option>
+                <option value="cdf">CDF — P(X ≤ x)</option>
+              </select>
+            </div>
+            <button type="button" id="ncalc">Hesapla</button>
+            <div class="out">
+              <div id="nout" aria-live="polite"></div>
+              <button type="button" id="ncomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+            </div>
+          </div>
+          <div class="normal-col" aria-labelledby="normal-zdirect-title">
+            <p class="normal-col-title" id="normal-zdirect-title"><strong>Doğrudan Z</strong> <span class="normal-col-hint">(N(0,1))</span></p>
+            <div class="row"><label for="nz">Z</label> <input type="number" id="nz" step="any" value="1" /></div>
+            <div class="row">
+              <label for="nzmode">Tür</label>
+              <select id="nzmode">
+                <option value="pdf">PDF — φ(z) yoğunluk</option>
+                <option value="cdf">CDF — P(Z ≤ z)</option>
+              </select>
+            </div>
+            <button type="button" id="nzcalc">Hesapla</button>
+            <div class="out">
+              <div id="nzout" aria-live="polite"></div>
+              <button type="button" id="nzcomp" class="btn-comp" hidden>Complement al (1 − P)</button>
+            </div>
+          </div>
         </div>
       </fieldset>
     </section>
@@ -440,10 +491,12 @@
     const bState = { label: "", raw: null, complement: false };
     const pState = { label: "", raw: null, complement: false };
     const nState = { label: "", raw: null, complement: false, mode: "cdf", z: null };
+    const nzState = { raw: null, complement: false, mode: "cdf", z: null };
     function refreshDisplayedResults() {
       if (bState.raw !== null) renderBinomial();
       if (pState.raw !== null) renderPoisson();
       if (nState.raw !== null) renderNormal();
+      if (nzState.raw !== null) renderNormalZ();
     }
     function renderBinomial() {
       const el = document.getElementById("bout");
@@ -481,6 +534,23 @@
       btn.hidden = false;
       btn.textContent = nState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
     }
+    function renderNormalZ() {
+      const el = document.getElementById("nzout");
+      const btn = document.getElementById("nzcomp");
+      if (nzState.raw === null || nzState.z === null) return;
+      const zLine = "Z = <span class=\"val\">" + fmtProb(nzState.z) + "</span>";
+      if (nzState.mode === "pdf") {
+        el.innerHTML = zLine + "<br>φ(z) = <span class=\"val\">" + fmtProb(nzState.raw) + "</span>";
+        btn.hidden = true;
+        return;
+      }
+      const lbl = "P(Z ≤ " + fmtProb(nzState.z) + ")";
+      const v = nzState.complement ? 1 - nzState.raw : nzState.raw;
+      const prefix = nzState.complement ? "1 − " : "";
+      el.innerHTML = zLine + "<br>" + prefix + lbl + " = <span class=\"val\">" + fmtProb(v) + "</span>";
+      btn.hidden = false;
+      btn.textContent = nzState.complement ? "Orijinal P’ye dön" : "Complement al (1 − P)";
+    }
     document.getElementById("bcalc").addEventListener("click", () => {
       const n = Number(document.getElementById("bn").value);
       const p = Number(document.getElementById("bp").value);
@@ -503,12 +573,12 @@
         el.innerHTML = '<span class="err">x negatif olmayan tam sayı olmalı.</span>';
         return;
       }
-      if (x > n && mode === "pdf") {
-        el.innerHTML = '<span class="err">x, n’den büyük olamaz (PDF için).</span>';
+      if (x > n && mode === "pmf") {
+        el.innerHTML = '<span class="err">x, n’den büyük olamaz (PMF için).</span>';
         return;
       }
-      const val = mode === "pdf" ? binomialPMF(n, p, x) : binomialCDF(n, p, x);
-      bState.label = mode === "pdf" ? "P(X = " + x + ")" : "P(X ≤ " + x + ")";
+      const val = mode === "pmf" ? binomialPMF(n, p, x) : binomialCDF(n, p, x);
+      bState.label = mode === "pmf" ? "P(X = " + x + ")" : "P(X ≤ " + x + ")";
       bState.raw = val;
       bState.complement = false;
       renderBinomial();
@@ -535,8 +605,8 @@
         el.innerHTML = '<span class="err">k negatif olmayan tam sayı olmalı.</span>';
         return;
       }
-      const val = mode === "pdf" ? poissonPMF(lambda, k) : poissonCDF(lambda, k);
-      pState.label = mode === "pdf" ? "P(X = " + k + ")" : "P(X ≤ " + k + ")";
+      const val = mode === "pmf" ? poissonPMF(lambda, k) : poissonCDF(lambda, k);
+      pState.label = mode === "pmf" ? "P(X = " + k + ")" : "P(X ≤ " + k + ")";
       pState.raw = val;
       pState.complement = false;
       renderPoisson();
@@ -582,6 +652,34 @@
       if (nState.raw === null || nState.mode !== "cdf") return;
       nState.complement = !nState.complement;
       renderNormal();
+    });
+    document.getElementById("nzcalc").addEventListener("click", () => {
+      const z = Number(document.getElementById("nz").value);
+      const mode = document.getElementById("nzmode").value;
+      const el = document.getElementById("nzout");
+      const btn = document.getElementById("nzcomp");
+      nzState.raw = null;
+      nzState.z = null;
+      nzState.complement = false;
+      nzState.mode = mode;
+      btn.hidden = true;
+      if (!isFinite(z)) {
+        el.innerHTML = '<span class="err">Z geçerli bir sayı olmalı.</span>';
+        return;
+      }
+      nzState.z = z;
+      if (mode === "pdf") {
+        nzState.raw = standardNormalPDF(z);
+      } else {
+        nzState.raw = standardNormalCDF(z);
+      }
+      nzState.complement = false;
+      renderNormalZ();
+    });
+    document.getElementById("nzcomp").addEventListener("click", () => {
+      if (nzState.raw === null || nzState.mode !== "cdf") return;
+      nzState.complement = !nzState.complement;
+      renderNormalZ();
     });
     (function settingsUi() {
       const panel = document.getElementById("settingsPanel");
